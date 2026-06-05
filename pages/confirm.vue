@@ -8,6 +8,8 @@
 </template>
 
 <script setup lang="ts">
+useSeoMeta({ robots: 'noindex,nofollow' })
+
 const supabase = useSupabaseClient()
 
 onMounted(async () => {

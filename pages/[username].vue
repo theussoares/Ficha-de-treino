@@ -129,12 +129,48 @@
 import { DAYS_CONFIG, DAY_NAMES } from '~/composables/useWorkout'
 
 const route = useRoute()
+const config = useRuntimeConfig()
 const username = (route.params.username as string).toLowerCase()
 
 const { workouts, schedule, doneState, loadPublic, getScheduledWorkout, getDone, toggle, markAll, reset } = useWorkoutDb()
 
 const pageState = ref<'loading' | 'ready' | 'notfound'>('loading')
 const displayName = ref('')
+
+// Fetch leve para SSR — só o que o Google precisa
+const { data: seoProfile } = await useAsyncData(`seo-${username}`, async () => {
+  const client = useSupabaseClient()
+  const { data } = await client
+    .from('profiles')
+    .select('display_name')
+    .eq('username', username)
+    .single()
+  return data as { display_name: string } | null
+})
+
+useSeoMeta({
+  title: () => seoProfile.value
+    ? `Ficha de ${seoProfile.value.display_name} | FichaTreino`
+    : 'FichaTreino',
+  description: () => seoProfile.value
+    ? `Acesse a ficha de treino de ${seoProfile.value.display_name}. Exercícios, séries e repetições detalhados para cada dia da semana.`
+    : 'Página não encontrada.',
+  ogTitle: () => seoProfile.value
+    ? `Ficha de ${seoProfile.value.display_name} | FichaTreino`
+    : 'FichaTreino',
+  ogDescription: () => seoProfile.value
+    ? `Confira os treinos de ${seoProfile.value.display_name} — séries, reps e observações de cada exercício.`
+    : '',
+  ogUrl: `${config.public.siteUrl}/${username}`,
+  twitterTitle: () => seoProfile.value
+    ? `Ficha de ${seoProfile.value.display_name} | FichaTreino`
+    : 'FichaTreino',
+  robots: () => seoProfile.value ? 'index,follow' : 'noindex,nofollow',
+})
+
+useHead({
+  link: [{ rel: 'canonical', href: `${config.public.siteUrl}/${username}` }],
+})
 
 onMounted(async () => {
   const result = await loadPublic(username)

@@ -68,6 +68,8 @@
 </template>
 
 <script setup lang="ts">
+useSeoMeta({ robots: 'noindex,nofollow', title: 'Entrar | FichaTreino' })
+
 const supabase = useSupabaseClient()
 const user = useSupabaseUser()
 

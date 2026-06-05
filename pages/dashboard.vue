@@ -45,6 +45,7 @@
 
 <script setup lang="ts">
 definePageMeta({ middleware: 'auth' })
+useSeoMeta({ robots: 'noindex,nofollow', title: 'Dashboard | FichaTreino' })
 
 const supabase = useSupabaseClient()
 const user = useSupabaseUser()
