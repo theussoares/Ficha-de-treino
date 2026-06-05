@@ -117,7 +117,11 @@ export function useWorkoutDb() {
   }
 
   async function loadDashboard() {
-    const uid = user.value?.id
+    let uid = user.value?.id
+    if (!uid) {
+      const { data: { session } } = await supabase.auth.getSession()
+      uid = session?.user?.id
+    }
     if (!uid) return
     loading.value = true
     workouts.value = []

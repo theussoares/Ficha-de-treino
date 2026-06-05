@@ -55,10 +55,14 @@ const editingId = ref<string | null>(null)
 const profile = ref<{ username: string; displayName: string } | null>(null)
 
 onMounted(async () => {
+  const { data: { session } } = await supabase.auth.getSession()
+  const uid = session?.user?.id
+  if (!uid) { await navigateTo('/login'); return }
+
   const { data } = await supabase
     .from('profiles')
     .select('username, display_name')
-    .eq('id', user.value!.id)
+    .eq('id', uid)
     .single() as { data: { username: string; display_name: string } | null }
 
   if (data) {
