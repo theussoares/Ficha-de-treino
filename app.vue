@@ -1,196 +1,6 @@
 <template>
-  <!-- Main View -->
-  <div v-if="currentView === 'main'" class="app">
-    <header class="header">
-      <div class="header-top">
-        <div>
-          <p class="header-label">Divisão PPL + Upper + Lower</p>
-          <h1 class="header-title">FICHA<br><span>TREINO</span></h1>
-        </div>
-        <button class="manage-btn" @click="currentView = 'manage'" title="Gerenciar treinos">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-          </svg>
-        </button>
-      </div>
-      <p class="header-quote">"O tempo recompensa aqueles que não negociam com a própria desistência."</p>
-    </header>
-
-    <!-- Week Nav -->
-    <nav class="week-nav">
-      <button
-        v-for="d in days"
-        :key="d.key"
-        :class="['day-btn', { rest: d.rest, active: selectedKey === d.key, completed: isDayCompleted(d.key) }]"
-        @click="!d.rest && select(d.key)"
-      >
-        <span class="day-name">{{ d.short }}</span>
-        <span class="day-letter">{{ d.letter }}</span>
-        <span class="day-tag">{{ d.tag }}</span>
-        <span class="done-dot" />
-      </button>
-    </nav>
-
-    <!-- Today Strip -->
-    <div class="today-strip">
-      <div class="today-info">
-        <span class="today-label">Hoje é</span>
-        <span class="today-day">{{ DAY_NAMES[todayKey] }}</span>
-      </div>
-      <div class="progress-ring">
-        <svg viewBox="0 0 48 48">
-          <circle class="track" cx="24" cy="24" r="20" />
-          <circle
-            class="fill"
-            cx="24" cy="24" r="20"
-            stroke-dasharray="125.66"
-            :stroke-dashoffset="ringOffset"
-          />
-        </svg>
-        <span class="progress-pct">{{ progressPct }}</span>
-      </div>
-    </div>
-
-    <!-- Content -->
-    <main class="content">
-      <!-- Rest day -->
-      <div v-if="!selectedWorkout" class="rest-card">
-        <div class="rest-icon">😴</div>
-        <div class="rest-title">DIA DE DESCANSO</div>
-        <p class="rest-sub">Recuperação faz parte do processo.<br>Descanse, hidrate-se, durma bem.</p>
-      </div>
-
-      <!-- Workout -->
-      <template v-else>
-        <div class="workout-header">
-          <div class="workout-title-block">
-            <span class="workout-type-tag">Treino {{ selectedWorkout.letter }}</span>
-            <h2 class="workout-name">{{ selectedWorkout.name }}</h2>
-            <p class="workout-count">{{ doneCount }}/{{ totalCount }} exercícios concluídos · {{ selectedWorkout.subtitle }}</p>
-          </div>
-          <button
-            :class="['complete-all-btn', { 'all-done': allDone }]"
-            @click="markAll(selectedKey)"
-          >
-            {{ allDone ? 'Desfazer' : 'Tudo feito' }}
-          </button>
-        </div>
-
-        <div class="exercise-list">
-          <div
-            v-for="(ex, i) in selectedWorkout.exercises"
-            :key="i"
-            :class="['exercise-card', { done: isDone(i) }]"
-            @click="toggle(selectedKey, i)"
-          >
-            <span class="ex-number">{{ String(i + 1).padStart(2, '0') }}</span>
-            <div class="ex-body">
-              <div class="ex-name">{{ ex.name }}</div>
-              <div v-if="ex.sets || ex.reps || ex.note" class="ex-details">
-                <span v-if="ex.sets" class="ex-badge">{{ ex.sets }} séries</span>
-                <span v-if="ex.reps" class="ex-badge">{{ ex.reps }} reps</span>
-                <span v-if="ex.note?.toLowerCase().includes('progressão')" class="ex-badge highlight">↑ Carga</span>
-                <span v-if="ex.note?.toLowerCase().includes('drop')" class="ex-badge highlight">Drop Set</span>
-              </div>
-              <p v-if="ex.note" class="ex-note">{{ ex.note }}</p>
-            </div>
-            <div class="ex-checkbox">
-              <span class="checkmark">✓</span>
-            </div>
-          </div>
-        </div>
-
-        <div v-if="allDone" class="completion-banner">
-          <div class="cb-emoji">🔥</div>
-          <div class="cb-title">TREINO COMPLETO!</div>
-          <p class="cb-sub">Treino {{ selectedWorkout.name }} finalizado. Missão cumprida.</p>
-        </div>
-
-        <button class="reset-btn" @click="reset(selectedKey)">Reiniciar treino</button>
-      </template>
-    </main>
-
-    <!-- Progress bar bottom -->
-    <div class="bottom-line" :style="{ transform: `scaleX(${progressFraction})` }" />
-  </div>
-
-  <!-- Manage View -->
-  <ManageView
-    v-else-if="currentView === 'manage'"
-    @back="currentView = 'main'"
-    @edit-workout="id => openWorkoutEditor(id)"
-    @new-workout="openWorkoutEditor(null)"
-  />
-
-  <!-- Workout Editor View -->
-  <WorkoutEditorView
-    v-else-if="currentView === 'workout-editor'"
-    :workout-id="editingWorkoutId"
-    @back="currentView = 'manage'"
-    @saved="currentView = 'manage'"
-  />
+  <NuxtPage />
 </template>
-
-<script setup lang="ts">
-import { DAYS_CONFIG, DAY_NAMES, useWorkoutStore } from '~/composables/useWorkout'
-
-const { workouts, schedule, doneState, load, getScheduledWorkout, getDone, toggle, markAll, reset } = useWorkoutStore()
-
-onMounted(() => load())
-
-const currentView = ref<'main' | 'manage' | 'workout-editor'>('main')
-const editingWorkoutId = ref<string | null>(null)
-
-function openWorkoutEditor(id: string | null) {
-  editingWorkoutId.value = id
-  currentView.value = 'workout-editor'
-}
-
-const jsDay = new Date().getDay()
-const keyOrder = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']
-const todayKey = keyOrder[jsDay]
-
-const selectedKey = ref(todayKey)
-
-function select(key: string) {
-  selectedKey.value = key
-}
-
-const days = computed(() => DAYS_CONFIG.map(d => {
-  const w = getScheduledWorkout(d.key)
-  return {
-    ...d,
-    letter: w?.letter ?? '—',
-    tag: w?.name ?? 'Descanso',
-    rest: !w,
-  }
-}))
-
-const selectedWorkout = computed(() => getScheduledWorkout(selectedKey.value))
-
-const doneSet = computed(() => getDone(selectedKey.value))
-const doneCount = computed(() => doneSet.value.size)
-const totalCount = computed(() => selectedWorkout.value?.exercises.length ?? 0)
-const allDone = computed(() => totalCount.value > 0 && doneCount.value === totalCount.value)
-
-function isDone(idx: number) {
-  return doneSet.value.has(idx)
-}
-
-function isDayCompleted(key: string) {
-  const w = getScheduledWorkout(key)
-  if (!w) return false
-  const done = getDone(key)
-  return done.size === w.exercises.length && w.exercises.length > 0
-}
-
-const progressFraction = computed(() => totalCount.value ? doneCount.value / totalCount.value : 0)
-const ringOffset = computed(() => 125.66 * (1 - progressFraction.value))
-const progressPct = computed(() => totalCount.value ? `${Math.round(progressFraction.value * 100)}%` : '—')
-
-watch([workouts, schedule, doneState], () => {}, { deep: true })
-</script>
 
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -232,23 +42,10 @@ html, body {
 .header-title span { color: var(--accent); }
 .header-quote { margin-top: 14px; font-size: 12px; color: var(--muted); font-style: italic; max-width: 360px; line-height: 1.6; border-left: 2px solid var(--accent); padding-left: 10px; }
 
-.manage-btn {
-  background: var(--surface2); border: 1.5px solid var(--border); color: var(--muted);
-  border-radius: 10px; width: 42px; height: 42px; display: flex; align-items: center;
-  justify-content: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0; margin-top: 6px;
-}
-.manage-btn:hover { border-color: var(--accent); color: var(--accent); background: #1a2000; }
-
 /* WEEK NAV */
 .week-nav { display: flex; gap: 8px; padding: 28px 24px 0; overflow-x: auto; scrollbar-width: none; }
 .week-nav::-webkit-scrollbar { display: none; }
-
-.day-btn {
-  flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 4px;
-  padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--border);
-  background: var(--surface); cursor: pointer; transition: all 0.2s; min-width: 60px;
-  position: relative; color: var(--text);
-}
+.day-btn { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--surface); cursor: pointer; transition: all 0.2s; min-width: 60px; position: relative; color: var(--text); }
 .day-btn:hover:not(.rest) { border-color: var(--accent); background: var(--surface2); }
 .day-btn.active:not(.rest) { border-color: var(--accent); background: #1a2000; }
 .day-btn.active .day-letter { color: var(--accent); }
@@ -264,7 +61,6 @@ html, body {
 .today-info { display: flex; flex-direction: column; gap: 2px; }
 .today-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
 .today-day { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; }
-
 .progress-ring { width: 48px; height: 48px; position: relative; }
 .progress-ring svg { transform: rotate(-90deg); width: 100%; height: 100%; }
 .progress-ring circle { fill: none; stroke-width: 3; }
@@ -286,7 +82,6 @@ html, body {
 .workout-type-tag { display: inline-block; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); background: #1a2000; border: 1px solid var(--accent); padding: 3px 9px; border-radius: 99px; margin-bottom: 6px; }
 .workout-name { font-family: 'Bebas Neue', sans-serif; font-size: 40px; letter-spacing: 1px; line-height: 1; }
 .workout-count { font-size: 13px; color: var(--muted); margin-top: 4px; }
-
 .complete-all-btn { flex-shrink: 0; padding: 10px 16px; border-radius: 10px; border: 1.5px solid var(--accent); background: transparent; color: var(--accent); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
 .complete-all-btn:hover, .complete-all-btn.all-done { background: var(--accent); color: #0a0a0c; }
 

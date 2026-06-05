@@ -1,9 +1,9 @@
 <template>
   <div class="ov-page">
-    <!-- Top bar -->
-    <div class="ov-topbar">
+    <!-- Top bar (apenas no modo overlay) -->
+    <div v-if="showBack" class="ov-topbar">
       <button class="ov-back" @click="$emit('back')">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 15l-7-7 7-7" transform="rotate(180 12 12)"/></svg>
         Voltar
       </button>
       <span class="ov-title">Gerenciar</span>
@@ -82,8 +82,10 @@
 </template>
 
 <script setup lang="ts">
-import { DAYS_CONFIG, DAY_NAMES, useWorkoutStore } from '~/composables/useWorkout'
+import { DAYS_CONFIG, DAY_NAMES } from '~/composables/useWorkout'
 import type { Workout } from '~/composables/useWorkout'
+
+withDefaults(defineProps<{ showBack?: boolean }>(), { showBack: true })
 
 defineEmits<{
   back: []
@@ -91,7 +93,7 @@ defineEmits<{
   'edit-workout': [id: string]
 }>()
 
-const { workouts, schedule, deleteWorkout, assignDay } = useWorkoutStore()
+const { workouts, schedule, deleteWorkout, assignDay } = useWorkoutDb()
 
 const pendingDelete = ref<Workout | null>(null)
 

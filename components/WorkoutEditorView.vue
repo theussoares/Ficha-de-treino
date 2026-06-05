@@ -102,7 +102,6 @@
 </template>
 
 <script setup lang="ts">
-import { useWorkoutStore } from '~/composables/useWorkout'
 import type { Exercise } from '~/composables/useWorkout'
 
 const props = defineProps<{
@@ -114,7 +113,7 @@ const emit = defineEmits<{
   saved: []
 }>()
 
-const store = useWorkoutStore()
+const store = useWorkoutDb()
 
 const form = reactive({
   name: '',
