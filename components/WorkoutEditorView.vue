@@ -46,9 +46,10 @@
           <div class="we-exnum">{{ String(i + 1).padStart(2, '0') }}</div>
           <div class="we-exbody">
             <div class="we-exname">{{ ex.name }}</div>
-            <div v-if="ex.sets || ex.reps" class="we-exmeta">
+            <div v-if="ex.sets || ex.reps || ex.rest" class="we-exmeta">
               <span v-if="ex.sets" class="ex-badge">{{ ex.sets }} séries</span>
               <span v-if="ex.reps" class="ex-badge">{{ ex.reps }} reps</span>
+              <span v-if="ex.rest" class="ex-badge">{{ ex.rest }} descanso</span>
             </div>
             <div v-if="ex.note" class="we-exnote">{{ ex.note }}</div>
           </div>
@@ -160,7 +161,7 @@ const exerciseModal = ref<{
 function openAddExercise() {
   exerciseModal.value = {
     index: null,
-    exercise: { name: '', sets: null, reps: null, note: null },
+    exercise: { name: '', sets: null, reps: null, rest: null, note: null },
   }
 }
 

@@ -96,14 +96,18 @@
             <span class="ex-number">{{ String(i + 1).padStart(2, '0') }}</span>
             <div class="ex-body">
               <div class="ex-name">{{ ex.name }}</div>
-              <div v-if="ex.sets || ex.reps || ex.note" class="ex-details">
+              <div v-if="ex.sets || ex.reps || ex.rest || ex.note" class="ex-details">
                 <span v-if="ex.sets" class="ex-badge">{{ ex.sets }} séries</span>
                 <span v-if="ex.reps" class="ex-badge">{{ ex.reps }} reps</span>
+                <span v-if="ex.rest" class="ex-badge">{{ ex.rest }} descanso</span>
                 <span v-if="ex.note?.toLowerCase().includes('progressão')" class="ex-badge highlight">↑ Carga</span>
                 <span v-if="ex.note?.toLowerCase().includes('drop')" class="ex-badge highlight">Drop Set</span>
               </div>
               <p v-if="ex.note" class="ex-note">{{ ex.note }}</p>
             </div>
+            <button v-if="ex.note || ex.rest" class="ex-info-btn" @click.stop="infoExercise = ex" title="Mais informações">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            </button>
             <div class="ex-checkbox">
               <span class="checkmark">✓</span>
             </div>
@@ -122,11 +126,18 @@
 
     <!-- Progress bar bottom -->
     <div class="bottom-line" :style="{ transform: `scaleX(${progressFraction})` }" />
+
+    <!-- Exercise info modal -->
+    <ExerciseInfoModal
+      v-if="infoExercise"
+      :exercise="infoExercise"
+      @close="infoExercise = null"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { DAYS_CONFIG, DAY_NAMES } from '~/composables/useWorkout'
+import { DAYS_CONFIG, DAY_NAMES, type Exercise } from '~/composables/useWorkout'
 
 const route = useRoute()
 const config = useRuntimeConfig()
@@ -136,6 +147,7 @@ const { workouts, schedule, doneState, loadPublic, getScheduledWorkout, getDone,
 
 const pageState = ref<'loading' | 'ready' | 'notfound'>('loading')
 const displayName = ref('')
+const infoExercise = ref<Exercise | null>(null)
 
 // Fetch leve para SSR — só o que o Google precisa
 const { data: seoProfile } = await useAsyncData(`seo-${username}`, async () => {

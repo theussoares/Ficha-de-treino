@@ -34,8 +34,13 @@
           </div>
 
           <div class="form-field">
-            <label class="form-label">Observação</label>
-            <input v-model="form.note" class="form-input" placeholder="Progressão de carga, drop set..." maxlength="120" @keydown.enter="save" />
+            <label class="form-label">Descanso</label>
+            <input v-model="form.rest" class="form-input" placeholder="1.5-2 min" maxlength="20" @keydown.enter="save" />
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Observação / Técnica</label>
+            <input v-model="form.note" class="form-input" placeholder="Progressão de carga, drop set..." maxlength="160" @keydown.enter="save" />
           </div>
         </div>
 
@@ -68,6 +73,7 @@ const form = reactive({
   name: props.exercise.name,
   sets: props.exercise.sets ?? '',
   reps: props.exercise.reps ?? '',
+  rest: props.exercise.rest ?? '',
   note: props.exercise.note ?? '',
 })
 
@@ -88,6 +94,7 @@ function save() {
     name: form.name.trim(),
     sets: form.sets.trim() || null,
     reps: form.reps.trim() || null,
+    rest: form.rest.trim() || null,
     note: form.note.trim() || null,
   })
 }

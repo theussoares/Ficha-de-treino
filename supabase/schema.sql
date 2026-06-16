@@ -30,6 +30,7 @@ create table public.exercises (
   name       text not null default '',
   sets       text,
   reps       text,
+  rest       text,
   note       text,
   position   int  not null default 0
 );

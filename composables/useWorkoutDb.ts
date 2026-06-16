@@ -17,6 +17,7 @@ interface ExerciseRow {
   name: string
   sets: string | null
   reps: string | null
+  rest: string | null
   note: string | null
   position: number
 }
@@ -38,7 +39,7 @@ function toWorkout(row: WorkoutRow): Workout {
     subtitle: row.subtitle,
     exercises: (row.exercises ?? [])
       .sort((a, b) => a.position - b.position)
-      .map(e => ({ name: e.name, sets: e.sets, reps: e.reps, note: e.note })),
+      .map(e => ({ name: e.name, sets: e.sets, reps: e.reps, rest: e.rest, note: e.note })),
   }
 }
 
@@ -75,7 +76,7 @@ export function useWorkoutDb() {
     const [wRes, sRes] = await Promise.all([
       supabase
         .from('workouts')
-        .select('id, name, letter, subtitle, position, exercises(name, sets, reps, note, position)')
+        .select('id, name, letter, subtitle, position, exercises(name, sets, reps, rest, note, position)')
         .eq('owner_id', ownerId)
         .order('position', { ascending: true }),
       supabase
@@ -151,7 +152,7 @@ export function useWorkoutDb() {
 
     if (data.exercises.length > 0) {
       await supabase.from('exercises').insert(
-        data.exercises.map((e, i) => ({ workout_id: wid, name: e.name, sets: e.sets, reps: e.reps, note: e.note, position: i })),
+        data.exercises.map((e, i) => ({ workout_id: wid, name: e.name, sets: e.sets, reps: e.reps, rest: e.rest, note: e.note, position: i })),
       )
     }
 
@@ -176,7 +177,7 @@ export function useWorkoutDb() {
       await supabase.from('exercises').delete().eq('workout_id', id)
       if (exercises.length > 0) {
         await supabase.from('exercises').insert(
-          exercises.map((e, i) => ({ workout_id: id, name: e.name, sets: e.sets, reps: e.reps, note: e.note, position: i })),
+          exercises.map((e, i) => ({ workout_id: id, name: e.name, sets: e.sets, reps: e.reps, rest: e.rest, note: e.note, position: i })),
         )
       }
     }

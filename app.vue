@@ -98,7 +98,9 @@ html, body {
 .ex-details { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
 .ex-badge { font-size: 10px; padding: 3px 8px; border-radius: 6px; background: var(--surface2); border: 1px solid var(--border); color: var(--muted); font-weight: 500; }
 .ex-badge.highlight { background: #1a1a00; border-color: #555500; color: #cccc00; }
-.ex-note { font-size: 11px; color: var(--muted); margin-top: 5px; font-style: italic; line-height: 1.4; }
+.ex-note { font-size: 11px; color: var(--muted); margin-top: 5px; font-style: italic; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ex-info-btn { background: var(--surface2); border: 1.5px solid var(--border); color: var(--muted); border-radius: 8px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
+.ex-info-btn:hover { border-color: var(--accent); color: var(--accent); }
 .ex-checkbox { width: 24px; height: 24px; border-radius: 7px; border: 2px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
 .exercise-card.done .ex-checkbox { background: var(--accent); border-color: var(--accent); }
 .checkmark { opacity: 0; transition: opacity 0.2s; color: #0a0a0c; font-size: 13px; font-weight: 700; }
