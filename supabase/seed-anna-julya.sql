@@ -1,15 +1,10 @@
 -- ============================================================
--- Seed: perfil "Anna Julya" — Hipertrofia de Pernas (5 dias)
--- Rode no SQL Editor do seu projeto Supabase.
+-- Seed: perfil "Anna Julya" — Iniciante, Foco em Inferiores
+-- Plano: 5 dias (seg/ter/qua/sex/sab) | Qui e Dom = descanso
+-- Estrutura: 3x Lower Body + 2x Upper Body
 --
--- Cria um usuário novo (email/senha abaixo), o profile, os 5
--- treinos com todos os exercícios (séries/reps/descanso/técnica)
--- e a escala semanal. Troque o e-mail/senha/username conforme
--- necessário antes de rodar.
+-- ANTES de rodar: certifique-se de ter rodado migration-add-rest.sql
 -- ============================================================
-
--- Se ainda não rodou a migration do campo "rest", rode primeiro:
--- alter table public.exercises add column if not exists rest text;
 
 do $$
 declare
@@ -46,68 +41,73 @@ begin
     'email', now(), now(), now()
   );
 
-  -- 2. Profile (o trigger handle_new_user já cria um profile básico; sobrescrevemos)
+  -- profile criado pelo trigger; garante username/display corretos
   update public.profiles
     set username = v_username, display_name = v_display
     where id = v_user_id;
 
-  -- 3. Treinos
+  -- 2. Treinos
   insert into public.workouts (owner_id, name, letter, subtitle, position)
-    values (v_user_id, 'LOWER BODY A', 'A', 'Quadríceps HEAVY', 0)
+    values (v_user_id, 'LOWER BODY A', 'A', 'Glúteo · Posterior · Quadríceps', 0)
     returning id into v_lower_a;
 
   insert into public.workouts (owner_id, name, letter, subtitle, position)
-    values (v_user_id, 'UPPER BODY A', 'B', 'Peito + Costas', 1)
+    values (v_user_id, 'UPPER BODY A', 'B', 'Costas · Bíceps · Abdômen', 1)
     returning id into v_upper_a;
 
   insert into public.workouts (owner_id, name, letter, subtitle, position)
-    values (v_user_id, 'LOWER BODY B', 'C', 'Glúteo + Posterior HEAVY', 2)
+    values (v_user_id, 'LOWER BODY B', 'C', 'Quadríceps · Glúteo · Adutores', 2)
     returning id into v_lower_b;
 
   insert into public.workouts (owner_id, name, letter, subtitle, position)
-    values (v_user_id, 'UPPER BODY B', 'D', 'Ombro + Braço', 3)
+    values (v_user_id, 'UPPER BODY B', 'D', 'Ombros · Tríceps · Abdômen', 3)
     returning id into v_upper_b;
 
   insert into public.workouts (owner_id, name, letter, subtitle, position)
-    values (v_user_id, 'LOWER BODY C', 'E', 'Pernas (Leve / Accessories)', 4)
+    values (v_user_id, 'LOWER BODY C', 'E', 'Glúteo · Perna · Acessórios (Leve)', 4)
     returning id into v_lower_c;
 
-  -- 4. Exercícios — LOWER BODY A (Segunda)
+  -- 3. Exercícios — LOWER BODY A (Segunda)
+  -- Foco: glúteo e posterior de coxa. Exercícios compostos pesados.
   insert into public.exercises (workout_id, name, sets, reps, rest, note, position) values
-    (v_lower_a, 'Agachamento Livre', '4', '6-8', '3-4 min', 'Pausa 1s no fundo. ROM ≥90°. Foco controle, não velocidade.', 0),
-    (v_lower_a, 'Leg Press', '3', '8-10', '2-3 min', 'Última série com DROP SET: atinge falha → reduz 25% peso → mais 6-8 reps.', 1),
-    (v_lower_a, 'Leg Extension', '3', '10-12', '1.5-2 min', 'Pausa 1s na extensão máxima. Sinta o quadríceps queimar.', 2),
-    (v_lower_a, 'Caminhada com Halter (Avanço)', '2', '12 por perna', '1.5 min', 'Controlada, sem balanço. Perna traseira quase toca o chão.', 3);
+    (v_lower_a, 'Agachamento no Smith', '4', '10-12', '2 min', 'Desça até 90° ou abaixo. Foco no glúteo e quadríceps. Pesquise "agachamento smith máquina" no YouTube.', 0),
+    (v_lower_a, 'Elevação de Quadril (Hip Thrust)', '4', '12-15', '1.5 min', 'Aperte o glúteo no topo e segure 1 segundo. O exercício mais eficaz para o bumbum. Pesquise "hip thrust iniciante".', 1),
+    (v_lower_a, 'Cadeira Flexora (Leg Curl)', '3', '12-15', '1.5 min', 'Movimento lento — 2s descendo. Foco no posterior de coxa.', 2),
+    (v_lower_a, 'Stiff com Halteres', '3', '12', '1.5 min', 'Costas retas, joelhos levemente dobrados. Sinta o alongamento no posterior de coxa ao descer.', 3);
 
   -- Exercícios — UPPER BODY A (Terça)
+  -- Foco: costas e bíceps. Volume moderado, peso acessível.
   insert into public.exercises (workout_id, name, sets, reps, rest, note, position) values
-    (v_upper_a, 'Supino (Haltere ou Barra)', '4', '6-8', '2.5-3 min', 'ROM máxima, pausa 1s no peito.', 0),
-    (v_upper_a, 'Puxada na Frente (ou Barra Fixa)', '3', '8-10', '2 min', 'Controlada, foco nas costas (não no braço).', 1),
-    (v_upper_a, 'Rosca Inclinada (Haltere)', '3', '10-12', '1.5 min', 'Pico máximo de contração, pausa 1s.', 2),
-    (v_upper_a, 'Remada Sentada (ou Máquina)', '2', '12-15', '1.5 min', 'Leve, foco na contração dorsal.', 3);
+    (v_upper_a, 'Puxada Alta na Polia', '4', '10-12', '1.5 min', 'Puxe a barra até o peito. Foco nas costas, não nos braços. Pesquise "puxada frente iniciante".', 0),
+    (v_upper_a, 'Remada na Máquina', '3', '12', '1.5 min', 'Puxe os cotovelos para trás e aperte as escápulas. Peito encostado no apoio.', 1),
+    (v_upper_a, 'Rosca Direta com Halteres', '3', '12-15', '1 min', 'Cotovelos fixos ao lado do corpo. Suba e desça com controle.', 2),
+    (v_upper_a, 'Prancha no Cotovelo', '3', '30 seg', '1 min', 'Corpo reto do calcanhar até o ombro. Respire normalmente. Pesquise "prancha isométrica".', 3);
 
   -- Exercícios — LOWER BODY B (Quarta)
+  -- Foco: quadríceps e glúteo. Volume médio, máquinas acessíveis.
   insert into public.exercises (workout_id, name, sets, reps, rest, note, position) values
-    (v_lower_b, 'Deadlift Romeno (ou Convencional)', '4', '5-8', '3-4 min', 'Pausa 1s no topo. Sinta o glúteo e o posterior contraindo — foco não é nas costas.', 0),
-    (v_lower_b, 'Hip Thrust (Elevação de Glúteo)', '3', '10-12', '2 min', 'Pausa 2-3s no topo. Squeeze máximo no glúteo.', 1),
-    (v_lower_b, 'Leg Curl Deitado', '3', '8-10', '2 min', 'ROM completa, pausa 1s no pico. Posterior de coxa queimando.', 2),
-    (v_lower_b, 'Leg Curl Máquina + Cadeira Extensora (SUPERSÉRIE)', '2', '10 + 10', '1.5 min', 'Sem descanso entre os dois — bomba metabólica = crescimento.', 3);
+    (v_lower_b, 'Leg Press 45°', '4', '12-15', '2 min', 'Pés na largura dos ombros. Desça até 90° de joelho — não trave os joelhos no topo.', 0),
+    (v_lower_b, 'Cadeira Extensora', '3', '12-15', '1.5 min', 'Pausa de 1 segundo no topo. Sinta o quadríceps contraindo.', 1),
+    (v_lower_b, 'Agachamento Sumô com Haltere', '3', '15', '1.5 min', 'Pés bem abertos, dedos apontados para fora. Foco no glúteo e na parte interna da coxa.', 2),
+    (v_lower_b, 'Panturrilha em Pé na Máquina', '3', '15-20', '1 min', 'Amplitude total — desça bem e suba na ponta dos pés. Movimento lento.', 3);
 
   -- Exercícios — UPPER BODY B (Sexta)
+  -- Foco: ombros e tríceps. Treino mais curto, peso leve.
   insert into public.exercises (workout_id, name, sets, reps, rest, note, position) values
-    (v_upper_b, 'Desenvolvimento Militar (Haltere ou Smith)', '3', '6-8', '2.5 min', 'Controlado, ombros para trás (não para o pescoço).', 0),
-    (v_upper_b, 'Elevação Lateral', '3', '12-15', '1.5 min', 'Peso leve, foco na sensação. Cotovelos levemente dobrados.', 1),
-    (v_upper_b, 'Rosca Direta + Tríceps Corda (SUPERSÉRIE)', '3', '10 + 10', '1.5 min', 'Sem descanso entre os dois. Bíceps + tríceps = braço completo.', 2),
-    (v_upper_b, 'Rosca Inversa (Posterior + Antebraço)', '2', '12-15', '1 min', 'Controlada, leve. O antebraço também cresce.', 3);
+    (v_upper_b, 'Desenvolvimento de Ombros com Halteres', '3', '10-12', '1.5 min', 'Sentada, empurre para cima sem travar os cotovelos no topo. Peso acessível.', 0),
+    (v_upper_b, 'Elevação Lateral com Halteres', '3', '12-15', '1 min', 'Peso bem leve. Cotovelos ligeiramente dobrados, suba até a altura dos ombros.', 1),
+    (v_upper_b, 'Tríceps na Polia (Corda)', '3', '12-15', '1 min', 'Cotovelo fixo ao lado do corpo. Estenda o braço completamente.', 2),
+    (v_upper_b, 'Abdominal Crunch na Máquina', '3', '15-20', '1 min', 'Movimento curto e controlado. Não force o pescoço — foco no abdômen.', 3);
 
   -- Exercícios — LOWER BODY C (Sábado)
+  -- Foco: glúteo leve + acessórios. Treino mais curto para fechar a semana.
   insert into public.exercises (workout_id, name, sets, reps, rest, note, position) values
-    (v_lower_c, 'Leg Press (ou Smith Agachamento)', '3', '10-12', '1.5-2 min', 'Pausa 1s no fundo. Foco na conexão mente-músculo.', 0),
-    (v_lower_c, 'Adutor Máquina + Abdutor (SUPERSÉRIE)', '2', '15 cada', '1.5 min', 'Bomba metabólica — sem descanso entre os dois.', 1),
-    (v_lower_c, 'Leg Extension Unilateral', '2', '12 por perna', '1.5 min', 'Uma perna por vez, maior adução. Sinta cada perna isoladamente.', 2),
-    (v_lower_c, 'Cadeira Extensora + Leg Curl Máquina (DROP SET)', '2', '12 + drop 8', '1.5 min', 'Extensão até a falha → reduz peso → leg curl até a falha. Quadríceps + posterior.', 3);
+    (v_lower_c, 'Abdução de Quadril na Máquina', '3', '15-20', '1 min', 'Peso leve. Foco na parte lateral do glúteo (glúteo médio). Movimento controlado.', 0),
+    (v_lower_c, 'Elevação de Quadril no Chão (sem peso)', '3', '20', '1 min', 'Deitada de costas, pés no chão. Suba o quadril e aperte o glúteo no topo. Pesquise "glute bridge".', 1),
+    (v_lower_c, 'Afundo com Halteres', '3', '10 por perna', '1.5 min', 'Dê um passo à frente, joelho traseiro quase toca o chão. Suba com controle. Pesquise "avanço ou afundo iniciante".', 2),
+    (v_lower_c, 'Cadeira Extensora (Leve)', '3', '15-20', '1 min', 'Peso mais leve que quarta. Complemento de quadríceps para fechar a semana.', 3);
 
-  -- 5. Escala semanal (quinta e domingo ficam de fora = descanso)
+  -- 4. Escala semanal
   insert into public.schedule_entries (owner_id, day_key, workout_id) values
     (v_user_id, 'mon', v_lower_a),
     (v_user_id, 'tue', v_upper_a),
