@@ -33,7 +33,8 @@ begin
   ) values (
     v_user_id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
     v_email, crypt(v_pass, gen_salt('bf')),
-    now(), '{"provider":"email","providers":["email"]}', '{}',
+    now(), '{"provider":"email","providers":["email"]}',
+    jsonb_build_object('username', v_username, 'display_name', v_display),
     now(), now(), '', ''
   );
 
