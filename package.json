@@ -9,7 +9,8 @@
     "preview": "nuxt preview"
   },
   "devDependencies": {
-    "nuxt": "^3.13.0"
+    "nuxt": "^3.13.0",
+    "@vite-pwa/nuxt": "^0.10.6"
   },
   "dependencies": {
     "@nuxtjs/supabase": "^2.0.9"

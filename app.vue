@@ -1,5 +1,6 @@
 <template>
   <NuxtPage />
+  <PwaInstallBanner />
 </template>
 
 <style>
